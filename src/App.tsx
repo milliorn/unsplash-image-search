@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FormEvent, useRef } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 
 const API_URL = "https://api.unsplash.com/search/photos";
@@ -8,6 +8,9 @@ const IMAGES_PER_PAGE = 10;
 const App = () => {
   // Create a reference with the type HTMLInputElement or null
   const searchInput = useRef<HTMLInputElement | null>(null);
+
+  const [images, setImages] = useState([]); // Create a state for the images
+  const [totalPages, setTotalPages] = useState(0); // Create a state for the total pages
 
   // Handle the search input change event
   const handleInputChange = (event: FormEvent) => {
@@ -38,6 +41,10 @@ const App = () => {
         }`
       );
       console.log("data", data);
+      // Update the images state
+      setImages(data.results);
+      // Update the total pages state
+      setTotalPages(data.total_pages);
     } catch (error) {
       console.log(error);
     }
