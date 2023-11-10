@@ -2,6 +2,15 @@ import axios from "axios";
 import { FormEvent, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 
+// Define the type for the UnsplashImage
+type UnsplashImage = {
+  id: string;
+  alt_description: string;
+  urls: {
+    small: string;
+  };
+};
+
 const API_URL = "https://api.unsplash.com/search/photos";
 const IMAGES_PER_PAGE = 10;
 
@@ -77,6 +86,19 @@ const App = () => {
         <div onClick={() => handleSelection("cooking")} className="">
           Cooking
         </div>
+      </div>
+
+      <div className="images">
+        {images.map((image: UnsplashImage) => {
+          return (
+            <img
+              alt={image.alt_description}
+              className="image"
+              key={image.id}
+              src={image.urls.small}
+            />
+          );
+        })}
       </div>
     </div>
   );
