@@ -1,5 +1,9 @@
+import axios from "axios";
 import { FormEvent, useRef } from "react";
 import { Form } from "react-bootstrap";
+
+const API_URL = "https://api.unsplash.com/search/photos";
+const IMAGES_PER_PAGE = 10;
 
 const App = () => {
   // Create a reference with the type HTMLInputElement or null
@@ -17,6 +21,25 @@ const App = () => {
     if (searchInput.current) {
       // Check if the input element exists
       searchInput.current.value = selection || ""; // Provide a default value if selection is falsy
+      fetchImages(); // Fetch images from the API
+    }
+  };
+
+  // Fetch images from the API
+  const fetchImages = async () => {
+    // Check if the input element exists
+    try {
+      // Make a GET request to the API
+      const { data } = await axios.get(
+        `${API_URL}?query=${
+          searchInput.current?.value
+        }&page=1&per_page=${IMAGES_PER_PAGE}&client_id=${
+          import.meta.env.VITE_API_KEY
+        }`
+      );
+      console.log("data", data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
