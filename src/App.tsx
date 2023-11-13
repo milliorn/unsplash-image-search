@@ -1,6 +1,6 @@
 import axios from "axios";
-import { FormEvent, useRef, useState } from "react";
-import { Form } from "react-bootstrap";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { Button, Form } from "react-bootstrap";
 
 // Define the type for the UnsplashImage
 type UnsplashImage = {
@@ -19,12 +19,20 @@ const App = () => {
   const searchInput = useRef<HTMLInputElement | null>(null);
 
   const [images, setImages] = useState([]); // Create a state for the images
+  const [page, setPage] = useState(1); // Create a state for the current page
   const [totalPages, setTotalPages] = useState(0); // Create a state for the total pages
+
+  // Reset the search
+  const resetSearch = () => {
+    setPage(1); // Reset the page state
+    fetchImages(); // Fetch images from the API
+  };
 
   // Handle the search input change event
   const handleInputChange = (event: FormEvent) => {
     event.preventDefault(); // Stop the form from submitting
     console.log("Submitted value: ", searchInput.current?.value); // Log the submitted value
+    resetSearch(); // Reset the search
   };
 
   // Handle the filter selection
@@ -33,7 +41,7 @@ const App = () => {
     if (searchInput.current) {
       // Check if the input element exists
       searchInput.current.value = selection || ""; // Provide a default value if selection is falsy
-      fetchImages(); // Fetch images from the API
+      resetSearch(); // Reset the search
     }
   };
 
@@ -45,7 +53,7 @@ const App = () => {
       const { data } = await axios.get(
         `${API_URL}?query=${
           searchInput.current?.value
-        }&page=1&per_page=${IMAGES_PER_PAGE}&client_id=${
+        }&page=${page}&per_page=${IMAGES_PER_PAGE}&client_id=${
           import.meta.env.VITE_API_KEY
         }`
       );
@@ -58,6 +66,12 @@ const App = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchImages(); // Fetch images from the API
+  }, [page]); // Re-run the effect when the page state changes
+
+  console.log("page", page);
 
   return (
     <div className="container">
@@ -99,6 +113,14 @@ const App = () => {
             />
           );
         })}
+      </div>
+      <div className="buttons">
+        {page > 1 && (
+          <Button onClick={() => setPage(page - 1)}>Previous</Button>
+        )}
+        {page < totalPages && (
+          <Button onClick={() => setPage(page + 1)}>Next</Button>
+        )}
       </div>
     </div>
   );
