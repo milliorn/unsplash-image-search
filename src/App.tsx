@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 import axios from "axios";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
