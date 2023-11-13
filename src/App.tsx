@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import axios from "axios";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 
 // Define the type for the UnsplashImage
@@ -23,12 +23,6 @@ const App = () => {
   const [page, setPage] = useState(1); // Create a state for the current page
   const [totalPages, setTotalPages] = useState(0); // Create a state for the total pages
 
-  // Reset the search
-  const resetSearch = () => {
-    setPage(1); // Reset the page state
-    fetchImages(); // Fetch images from the API
-  };
-
   // Handle the search input change event
   const handleInputChange = (event: FormEvent) => {
     event.preventDefault(); // Stop the form from submitting
@@ -47,30 +41,37 @@ const App = () => {
   };
 
   // Fetch images from the API
-  const fetchImages = async () => {
-    // Check if the input element exists
+  const fetchImages = useCallback(async () => {
     try {
-      // Make a GET request to the API
-      const { data } = await axios.get(
-        `${API_URL}?query=${
-          searchInput.current?.value
-        }&page=${page}&per_page=${IMAGES_PER_PAGE}&client_id=${
-          import.meta.env.VITE_API_KEY
-        }`
-      );
-      console.log("data", data);
-      // Update the images state
-      setImages(data.results);
-      // Update the total pages state
-      setTotalPages(data.total_pages);
+      // Check if the input element exists and has a value
+      if (searchInput.current!.value) {
+        // Make a request to the Unsplash API
+        const { data } = await axios.get(
+          `${API_URL}?query=${
+            searchInput.current!.value
+          }&page=${page}&per_page=${IMAGES_PER_PAGE}&client_id=${
+            import.meta.env.VITE_API_KEY
+          }`
+        );
+        console.log("data", data); // Log the data
+        setImages(data.results); // Update the images state
+        setTotalPages(data.total_pages); // Update the total pages state
+      }
+      // If the input element doesn't exist or doesn't have a value
     } catch (error) {
-      console.log(error);
+      console.error(error); // Log the error
     }
+  }, [page]);
+
+  // Reset the search
+  const resetSearch = () => {
+    setPage(1); // Reset the page state
+    fetchImages(); // Fetch images from the API
   };
 
   useEffect(() => {
     fetchImages(); // Fetch images from the API
-  }, [page]); // Re-run the effect when the page state changes
+  }, [fetchImages, page]); // Re-run the effect when the page state changes
 
   console.log("page", page);
 
@@ -115,6 +116,7 @@ const App = () => {
           );
         })}
       </div>
+
       <div className="buttons">
         {page > 1 && (
           <Button onClick={() => setPage(page - 1)}>Previous</Button>
