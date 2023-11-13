@@ -71,7 +71,7 @@ const App = () => {
 
   useEffect(() => {
     fetchImages(); // Fetch images from the API
-  }, [fetchImages, page]); // Re-run the effect when the page state changes
+  }, [fetchImages]); // Re-run the effect when the page state changes
 
   console.log("page", page);
 
