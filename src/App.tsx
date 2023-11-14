@@ -22,6 +22,13 @@ const App = () => {
   const [images, setImages] = useState([]); // Create a state for the images
   const [page, setPage] = useState(1); // Create a state for the current page
   const [totalPages, setTotalPages] = useState(0); // Create a state for the total pages
+  const [loading, setLoading] = useState(false); // Create a state for the loading state
+
+  // Reset the search
+  const resetSearch = () => {
+    setPage(1); // Reset the page state
+    fetchImages(); // Fetch images from the API
+  };
 
   // Handle the search input change event
   const handleInputChange = (event: FormEvent) => {
@@ -45,29 +52,28 @@ const App = () => {
     try {
       // Check if the input element exists and has a value
       if (searchInput.current!.value) {
-        // Make a request to the Unsplash API
-        const { data } = await axios.get(
-          `${API_URL}?query=${
-            searchInput.current!.value
-          }&page=${page}&per_page=${IMAGES_PER_PAGE}&client_id=${
-            import.meta.env.VITE_API_KEY
-          }`
-        );
-        console.log("data", data); // Log the data
-        setImages(data.results); // Update the images state
-        setTotalPages(data.total_pages); // Update the total pages state
+        setLoading(true); // Set the loading state to true
+        setTimeout(async () => {
+          // Make a request to the Unsplash API
+          const { data } = await axios.get(
+            `${API_URL}?query=${
+              searchInput.current!.value
+            }&page=${page}&per_page=${IMAGES_PER_PAGE}&client_id=${
+              import.meta.env.VITE_API_KEY
+            }`
+          );
+          console.log("data", data); // Log the data
+          setImages(data.results); // Update the images state
+          setTotalPages(data.total_pages); // Update the total pages state
+          setLoading(false); // Set the loading state to false
+        }, 1000);
       }
       // If the input element doesn't exist or doesn't have a value
     } catch (error) {
       console.error(error); // Log the error
+      setLoading(false);
     }
   }, [page]);
-
-  // Reset the search
-  const resetSearch = () => {
-    setPage(1); // Reset the page state
-    fetchImages(); // Fetch images from the API
-  };
 
   useEffect(() => {
     fetchImages(); // Fetch images from the API
@@ -88,7 +94,6 @@ const App = () => {
           />
         </Form>
       </div>
-
       <div className="filters">
         <div onClick={() => handleSelection("random")} className="">
           Random
@@ -104,27 +109,33 @@ const App = () => {
         </div>
       </div>
 
-      <div className="images">
-        {images.map((image: UnsplashImage) => {
-          return (
-            <img
-              alt={image.alt_description}
-              className="image"
-              key={image.id}
-              src={image.urls.small}
-            />
-          );
-        })}
-      </div>
+      {loading ? (
+        <span className="loading">Loading...</span>
+      ) : (
+        <>
+          <div className="images">
+            {images.map((image: UnsplashImage) => {
+              return (
+                <img
+                  alt={image.alt_description}
+                  className="image"
+                  key={image.id}
+                  src={image.urls.small}
+                />
+              );
+            })}
+          </div>
 
-      <div className="buttons">
-        {page > 1 && (
-          <Button onClick={() => setPage(page - 1)}>Previous</Button>
-        )}
-        {page < totalPages && (
-          <Button onClick={() => setPage(page + 1)}>Next</Button>
-        )}
-      </div>
+          <div className="buttons">
+            {page > 1 && (
+              <Button onClick={() => setPage(page - 1)}>Previous</Button>
+            )}
+            {page < totalPages && (
+              <Button onClick={() => setPage(page + 1)}>Next</Button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
