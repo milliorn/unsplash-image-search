@@ -1,7 +1,15 @@
 /* eslint-disable react/react-in-jsx-scope */
 import axios from "axios";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button, Form } from "react-bootstrap";
+import SyncLoader from "react-spinners/SyncLoader";
 
 // Define the type for the UnsplashImage
 type UnsplashImage = {
@@ -14,6 +22,12 @@ type UnsplashImage = {
 
 const API_URL = "https://api.unsplash.com/search/photos";
 const IMAGES_PER_PAGE = 10;
+
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  padding: "2rem",
+};
 
 const App = () => {
   // Create a reference with the type HTMLInputElement or null
@@ -66,7 +80,7 @@ const App = () => {
           setImages(data.results); // Update the images state
           setTotalPages(data.total_pages); // Update the total pages state
           setLoading(false); // Set the loading state to false
-        }, 1000);
+        }, 2000);
       }
       // If the input element doesn't exist or doesn't have a value
     } catch (error) {
@@ -110,7 +124,13 @@ const App = () => {
       </div>
 
       {loading ? (
-        <span className="loading">Loading...</span>
+        <SyncLoader
+          cssOverride={override}
+          loading={loading}
+          size={100}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
       ) : (
         <>
           <div className="images">
