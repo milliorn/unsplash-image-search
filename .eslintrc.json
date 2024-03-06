@@ -60,5 +60,10 @@
                 "skipComments": true
             }
         ]
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
 }
