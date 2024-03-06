@@ -1,4 +1,20 @@
 {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+            "argsIgnorePattern": "^_",
+            "ignoreRestSiblings": true,
+            "varsIgnorePattern": "^_"
+        }
+    ],
+    "complexity": [
+        "error",
+        {
+            "max": 10
+        }
+    ],
+    "consistent-return": "error",
     "env": {
         "browser": true,
         "es2021": true
@@ -6,7 +22,29 @@
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:react/recommended"
+        "plugin:import/errors",
+        "plugin:import/typescript",
+        "plugin:import/warnings",
+        "plugin:prettier/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:react/recommended",
+        "plugin:security/recommended"
+    ],
+    "max-depth": [
+        "error",
+        4
+    ],
+    "max-lines-per-function": [
+        "error",
+        {
+            "max": 50,
+            "skipBlankLines": true,
+            "skipComments": true
+        }
+    ],
+    "max-params": [
+        "error",
+        3
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -34,5 +72,9 @@
             "error",
             "always"
         ]
-    }
+    },
+    "strict": [
+        "error",
+        "never"
+    ]
 }
